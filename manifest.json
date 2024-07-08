@@ -1,0 +1,30 @@
+{
+    "name" : "extension test",
+    "description": "testing extension",
+    "manifest_version" : 2,
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArs6dDO/12UCRy36ZYDYADSadVmJ//EPDH+YBDTCDDWPh/v9tfQTgeeBgaENttzgejWvycjNXyj+n2AJJNHbtkteKCFmnETYRhXHzenlf4gxbclue97taE6J2bvGZa431R4wDXJx7yKwGmTdS6zUGuqZNd91uqqQozO2nABtptxCsmeDIQFAHuITamDaBVKTO2ZkLis7aLzgTMfO5w8YYcaZ+P//I+njibtnrtG2mym5anfisk54/IgawEx7HZvbJQKClOgZ8xnEvmIQJ8RokT3m7r8QJLq+AUbiHqj7xDWeX8G35mvuos9jC9d12hwhllnNJ3rcjVeATnAOHycRnUwIDAQAB",
+    "oauth2" : {
+        "client_id" : "748596873331-skoig8m7rh77uua4hvv5u59avfer9bhc.apps.googleusercontent.com",
+        "scopes": [
+            "profile email",
+            "https;//www.googleapis.com/auth/contacts"
+        ]
+
+    },
+    "version": "1.0",
+    "background" : {
+        "scripts" : [
+            "./background.js",
+            "./jsrsasign-all-min.js"
+        ]
+    },
+    "options_page": "./options.html",
+    "browser_action" : {
+        "default_popup": "popup.html"
+    },
+    "permissions":[
+        "identity",
+        "identity.email"
+    ]
+}
+    
