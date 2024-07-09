@@ -2,7 +2,7 @@
   "name": "extension",
   "version": "1.0.0",
   "description": "Backend for Chrome extension to save webpages",
-  "main": "app.js",
+  "main": "chrome-extension-backend/app.js",
   "scripts": {
     "start": "node chrome-extension-backend/app.js"
   },
