@@ -7,12 +7,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => {
+console.log('MongoDB URI:', process.env.MONGODB_URI); // Debug log all env variables
+
+mongoose.connect(process.env.MONGODB_URI).then(() => {
   console.log('Connected to MongoDB');
 }).catch(err => {
   console.error('Error connecting to MongoDB', err);

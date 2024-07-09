@@ -4,7 +4,7 @@
   "description": "Backend for Chrome extension to save webpages",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node chrome-extension-backend/app.js"
   },
   "engines": {
     "node": "14.x"
