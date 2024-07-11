@@ -8,16 +8,17 @@ app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
+const MONGO_URI = process.env.MONGO_URI;
 
-const MONGODB_URI = process.env.MONGODB_URI;
+console.log('MongoDB URI:', MONGO_URI); // This should print the correct URI
 
-console.log('MongoDB URI:', process.env.MONGODB_URI); // Debug log all env variables
-
-mongoose.connect(process.env.MONGODB_URI).then(() => {
-  console.log('Connected to MongoDB');
-}).catch(err => {
-  console.error('Error connecting to MongoDB', err);
-});
+mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log('Connected to MongoDB');
+  })
+  .catch(err => {
+    console.error('Error connecting to MongoDB', err);
+  });
 
 const User = require('./models/user');
 const Article = require('./models/article');
@@ -56,12 +57,9 @@ app.get('/get-articles/:userId', async (req, res) => {
   }
 });
 
+// Add a root route for verification
 app.get('/', (req, res) => {
   res.send('Server is running!');
-});
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
 });
 
 app.listen(PORT, () => {
