@@ -56,6 +56,14 @@ app.get('/get-articles/:userId', async (req, res) => {
   }
 });
 
+app.get('/', (req, res) => {
+  res.send('Server is running!');
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
