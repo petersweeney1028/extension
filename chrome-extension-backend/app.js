@@ -9,6 +9,8 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
 
+const MONGODB_URI = process.env.MONGODB_URI;
+
 console.log('MongoDB URI:', process.env.MONGODB_URI); // Debug log all env variables
 
 mongoose.connect(process.env.MONGODB_URI).then(() => {

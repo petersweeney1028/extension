@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 url: activeTab.url,
                 title: activeTab.title
             };
+            console.log('Saving article with:', pageInfo); // Log the data being sent
             chrome.runtime.sendMessage({ message: 'save-article', data: pageInfo }, function(response) {
                 if (response === 'success') {
                     console.log('Article saved successfully');
