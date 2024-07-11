@@ -23,19 +23,35 @@ const Article = require('./models/article');
 // Routes
 app.post('/save-article', async (req, res) => {
   const { userId, url, title, summary } = req.body;
+  console.log('Received article:', { userId, url, title, summary });
+
+  if (!url || !title) {
+    return res.status(400).json({ error: 'URL and title are required' });
+  }
+
   const article = new Article({ userId, url, title, summary });
-  await article.save();
-  res.json(article);
+  try {
+    const savedArticle = await article.save();
+    console.log('Article saved:', savedArticle);
+    res.json(savedArticle);
+  } catch (error) {
+    console.error('Error saving article:', error);
+    res.status(500).json({ error: 'Failed to save article' });
+  }
 });
 
 app.get('/get-articles/:userId', async (req, res) => {
   const { userId } = req.params;
-  const articles = await Article.find({ userId });
-  res.json(articles);
-});
+  console.log('Fetching articles for user:', userId);
 
-app.get('/', (req, res) => {
-  res.send('Hello, World!');
+  try {
+    const articles = await Article.find({ userId });
+    console.log('Articles found:', articles);
+    res.json(articles);
+  } catch (error) {
+    console.error('Error fetching articles:', error);
+    res.status(500).json({ error: 'Failed to fetch articles' });
+  }
 });
 
 app.listen(PORT, () => {

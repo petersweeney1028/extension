@@ -25,7 +25,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 url: activeTab.url,
                 title: activeTab.title
             };
-            chrome.runtime.sendMessage({ message: 'save-article', data: pageInfo });
+            chrome.runtime.sendMessage({ message: 'save-article', data: pageInfo }, function(response) {
+                if (response === 'success') {
+                    console.log('Article saved successfully');
+                } else {
+                    console.error('Error saving article');
+                }
+            });
+
         });
     });
 });
