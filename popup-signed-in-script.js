@@ -20,12 +20,21 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('save-page').addEventListener('click', function() {
         chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
             const activeTab = tabs[0];
+            console.log('Active tab:', activeTab);
+
+            if (!activeTab || !activeTab.url || !activeTab.title) {
+                console.error('Failed to get the active tab information');
+                return;
+            }
+
             const pageInfo = {
                 userId: 'your-user-id',
                 url: activeTab.url,
                 title: activeTab.title
             };
-            console.log('Saving article with:', pageInfo); // Log the data being sent
+
+            console.log('Saving article with:', pageInfo);
+
             chrome.runtime.sendMessage({ message: 'save-article', data: pageInfo }, function(response) {
                 if (response === 'success') {
                     console.log('Article saved successfully');
@@ -33,7 +42,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.error('Error saving article');
                 }
             });
-
         });
     });
 });

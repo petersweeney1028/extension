@@ -24,7 +24,8 @@
     },
     "permissions":[
         "identity",
-        "identity.email"
+        "identity.email",
+        "activeTab"
     ]
 }
     
