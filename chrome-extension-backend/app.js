@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const cheerio = require('cheerio');
 require('dotenv').config();
 
 const app = express();
@@ -23,16 +24,57 @@ mongoose.connect(MONGO_URI)
 const User = require('./models/user');
 const Article = require('./models/article');
 
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+const openai = new OpenAIApi(configuration);
+
+async function getArticleContent(url) {
+  try {
+    const { data } = await axios.get(url);
+    const $ = cheerio.load(data);
+    const paragraphs = $('p');
+    let content = '';
+    paragraphs.each((index, element) => {
+      content += $(element).text();
+    });
+    return content;
+  } catch (error) {
+    console.error('Error fetching article content:', error);
+    return '';
+  }
+}
+
+async function summarizeArticle(content) {
+  try {
+    const response = await openai.createCompletion({
+      model: 'text-davinci-002',
+      prompt: `Summarize the following article:\n\n${content}`,
+      max_tokens: 100,
+    });
+    return response.data.choices[0].text.trim();
+  } catch (error) {
+    console.error('Error summarizing article:', error);
+    return 'Summary not available';
+  }
+}
+
 // Routes
 app.post('/save-article', async (req, res) => {
-  const { userId, url, title, summary } = req.body;
-  console.log('Received article:', { userId, url, title, summary });
+  const { userId, url, title } = req.body;
+  console.log('Received article:', { userId, url, title });
 
   if (!url || !title) {
     return res.status(400).json({ error: 'URL and title are required' });
   }
 
-  const article = new Article({ userId, url, title, summary });
+  const articleContent = await fetchArticleContent(url);
+  if (!articleContent) {
+    return res.status(500).json({ error: 'Failed to fetch article content' });
+  }
+
+  const summarizedContent = await summarizeArticle(articleContent);
+  const article = new Article({ userId, url, title, summary: summarizedContent });
   try {
     const savedArticle = await article.save();
     console.log('Article saved:', savedArticle);
