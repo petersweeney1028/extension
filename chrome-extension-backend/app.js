@@ -49,18 +49,17 @@ async function getArticleContent(url) {
 
 async function summarizeArticle(content) {
   try {
-    const response = await openai.createCompletion({
+    const response = await openai.completions.create({
       model: 'text-davinci-002',
       prompt: `Summarize the following article:\n\n${content}`,
       max_tokens: 100,
     });
-    return response.data.choices[0].text.trim();
+    return response.choices[0].text.trim();
   } catch (error) {
     console.error('Error summarizing article:', error);
     return 'Summary not available';
   }
 }
-
 // Routes
 app.post('/save-article', async (req, res) => {
   const { userId, url, title } = req.body;
