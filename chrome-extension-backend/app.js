@@ -5,7 +5,7 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 require('dotenv').config();
 
-const { Configuration, OpenAIApi } = require('openai'); // Correct import statement
+const OpenAI = require('openai'); // Import OpenAI class directly
 
 const app = express();
 app.use(cors());
@@ -27,10 +27,9 @@ mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
 const User = require('./models/user');
 const Article = require('./models/article');
 
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 async function getArticleContent(url) {
   try {
