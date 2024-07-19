@@ -5,7 +5,7 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 require('dotenv').config();
 
-const { OpenAIApi } = require('openai'); // Import OpenAI modules
+const { Configuration, OpenAIApi } = require('openai'); // Import OpenAI modules correctly
 
 const app = express();
 app.use(cors());
