@@ -1,8 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const axios = require('axios');
 const cheerio = require('cheerio');
 require('dotenv').config();
+
+const { Configuration, OpenAIApi } = require('openai'); // Import OpenAI modules
 
 const app = express();
 app.use(cors());
