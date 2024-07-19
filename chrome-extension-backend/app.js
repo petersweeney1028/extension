@@ -49,12 +49,14 @@ async function getArticleContent(url) {
 
 async function summarizeArticle(content) {
   try {
-    const response = await openai.completions.create({
+    const response = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
-      prompt: `Summarize the following article:\n\n${content}`,
-      max_tokens: 100,
+      messages: [
+        { role: 'system', content: 'You are a helpful assistant.' },
+        { role: 'user', content: `Summarize the following article:\n\n${content}` },
+      ],
     });
-    return response.choices[0].text.trim();
+    return response.choices[0].message.content.trim();
   } catch (error) {
     console.error('Error summarizing article:', error);
     return 'Summary not available';
