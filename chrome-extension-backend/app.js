@@ -50,7 +50,7 @@ async function getArticleContent(url) {
 async function summarizeArticle(content) {
   try {
     const response = await openai.completions.create({
-      model: 'text-davinci-002',
+      model: 'gpt-3.5-turbo',
       prompt: `Summarize the following article:\n\n${content}`,
       max_tokens: 100,
     });
