@@ -5,7 +5,7 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 require('dotenv').config();
 
-const { Configuration, OpenAIApi } = require('openai'); 
+const { Configuration, OpenAIApi } = require('openai'); // Correct import statement
 
 const app = express();
 app.use(cors());
@@ -16,7 +16,7 @@ const MONGO_URI = process.env.MONGO_URI;
 
 console.log('MongoDB URI:', MONGO_URI);
 
-mongoose.connect(MONGO_URI)
+mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log('Connected to MongoDB');
   })
