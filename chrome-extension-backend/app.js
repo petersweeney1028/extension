@@ -71,7 +71,7 @@ app.post('/save-article', async (req, res) => {
     return res.status(400).json({ error: 'URL and title are required' });
   }
 
-  const articleContent = await fetchArticleContent(url);
+  const articleContent = await getArticleContent(url);
   if (!articleContent) {
     return res.status(500).json({ error: 'Failed to fetch article content' });
   }
