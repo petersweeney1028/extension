@@ -64,32 +64,6 @@ async function summarizeArticle(content) {
 }
 
 // Routes
-app.post('/create-user', async (req, res) => {
-  const { googleId, email, name } = req.body;
-  console.log('Received user:', { googleId, email, name });
-
-  if (!googleId || !email) {
-    return res.status(400).json({ error: 'Google ID and email are required' });
-  }
-
-  try {
-    let user = await User.findOne({ googleId });
-    if (!user) {
-      user = new User({ googleId, email, name });
-    } else {
-      user.email = email;
-      user.name = name;
-    }
-
-    await user.save();
-    console.log('User saved:', user);
-    res.json({ success: true, user });
-  } catch (error) {
-    console.error('Error saving user:', error);
-    res.status(500).json({ error: 'Failed to save user' });
-  }
-});
-
 app.post('/save-article', async (req, res) => {
   const { userId, url, title } = req.body;
   console.log('Received article:', { userId, url, title });
@@ -104,7 +78,7 @@ app.post('/save-article', async (req, res) => {
   }
 
   const summarizedContent = await summarizeArticle(articleContent);
-  const article = new Article({ userId, url, title, summary: summarizedContent });
+  const article = new Article({ userId, url, title, summary: summarizedContent, date: new Date() });
   try {
     const savedArticle = await article.save();
     console.log('Article saved:', savedArticle);
@@ -119,8 +93,11 @@ app.get('/get-articles/:userId', async (req, res) => {
   const { userId } = req.params;
   console.log('Fetching articles for user:', userId);
 
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
   try {
-    const articles = await Article.find({ userId });
+    const articles = await Article.find({ userId, date: { $gte: sevenDaysAgo } });
     console.log('Articles found:', articles);
     res.json(articles);
   } catch (error) {
