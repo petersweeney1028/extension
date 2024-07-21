@@ -1,11 +1,24 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
 const User = require('./models/user');
 const Article = require('./models/article');
 const sendGridMail = require('@sendgrid/mail');
 
+if (!process.env.SENDGRID_API_KEY.startsWith("SG.")) {
+  console.error('API key does not start with "SG.".');
+  process.exit(1);
+}
+
 sendGridMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+const MONGO_URI = process.env.MONGO_URI;
+
+if (!MONGO_URI) {
+  console.error('MongoDB URI is not defined in environment variables.');
+  process.exit(1);
+}
+
+mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log('Connected to MongoDB');
     processUsers();

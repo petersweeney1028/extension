@@ -68,8 +68,8 @@ app.post('/save-article', async (req, res) => {
   const { userId, url, title } = req.body;
   console.log('Received article:', { userId, url, title });
 
-  if (!url || !title) {
-    return res.status(400).json({ error: 'URL and title are required' });
+  if (!url || !title || !userId) {
+    return res.status(400).json({ error: 'URL, title, and userId are required' });
   }
 
   const articleContent = await getArticleContent(url);
