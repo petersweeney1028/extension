@@ -20,12 +20,12 @@ mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     console.error('Error connecting to MongoDB', err);
   });
 
-async function fetchArticles() {
+async function fetchArticles(userId) {
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
   try {
-    const articles = await Article.find({ date: { $gte: sevenDaysAgo } });
+    const articles = await Article.find({ userId, date: { $gte: sevenDaysAgo } });
     return articles;
   } catch (error) {
     console.error('Error fetching articles:', error);
@@ -51,41 +51,42 @@ function formatArticlesToHTML(articles) {
 async function sendEmail(to, subject, htmlContent) {
   const msg = {
     to,
-    from: 'your-email@example.com', // Replace with your verified sender email
+    from: 'swiftie@taylortimes.news', // Replace with your verified sender email
     subject,
     html: htmlContent,
   };
 
   try {
     await sgMail.send(msg);
-    console.log('Email sent successfully');
+    console.log(`Email sent successfully to ${to}`);
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error(`Error sending email to ${to}:`, error);
   }
 }
 
 async function main() {
-  const articles = await fetchArticles();
-  if (articles.length === 0) {
-    console.log('No articles found from the last 7 days.');
-    return;
+  try {
+    const users = await User.find();
+
+    for (const user of users) {
+      const articles = await fetchArticles(user.googleId);
+      if (articles.length === 0) {
+        console.log(`No articles found for user ${user.email} from the last 7 days.`);
+        continue;
+      }
+
+      const htmlContent = formatArticlesToHTML(articles);
+      await sendEmail(user.email, 'Your Article Summary for the Last 7 Days', htmlContent);
+    }
+  } catch (error) {
+    console.error('Error in main function:', error);
+  } finally {
+    mongoose.disconnect();
   }
-
-  const htmlContent = formatArticlesToHTML(articles);
-
-  // Fetch the user email. You can modify this to fetch the user dynamically if needed.
-  const user = await User.findOne({ googleId: 'your-user-id' }); // Replace with actual user ID or logic to fetch user
-  if (!user) {
-    console.error('User not found');
-    return;
-  }
-
-  await sendEmail(user.email, 'Your Article Summary for the Last 7 Days', htmlContent);
 }
 
 main()
-  .then(() => mongoose.disconnect())
+  .then(() => console.log('Finished processing all users.'))
   .catch(err => {
     console.error('Error in main function:', err);
-    mongoose.disconnect();
   });
