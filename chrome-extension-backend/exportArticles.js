@@ -34,7 +34,8 @@ async function processUsers() {
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-      const articles = await Article.find({ userId: user._id, date: { $gte: sevenDaysAgo } });
+      // Use user.googleId instead of user._id
+      const articles = await Article.find({ userId: user.googleId, date: { $gte: sevenDaysAgo } });
       if (articles.length === 0) {
         console.log(`No articles found for user ${user.email} from the last 7 days.`);
         continue;
@@ -48,7 +49,7 @@ async function processUsers() {
 
       const msg = {
         to: user.email,
-        from: 'your-email@example.com',
+        from: 'swiftie@taylortimes.news', // Replace with your email
         subject: 'Your Weekly Article Summaries',
         html: emailContent,
       };
