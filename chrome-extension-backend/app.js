@@ -93,11 +93,8 @@ app.get('/get-articles/:userId', async (req, res) => {
   const { userId } = req.params;
   console.log('Fetching articles for user:', userId);
 
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
   try {
-    const articles = await Article.find({ userId, date: { $gte: sevenDaysAgo } });
+    const articles = await Article.find({ userId }).sort({ date: -1 }); // Sort by date in descending order
     console.log('Articles found:', articles);
     res.json(articles);
   } catch (error) {
@@ -105,6 +102,7 @@ app.get('/get-articles/:userId', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch articles' });
   }
 });
+
 
 // Add a root route for verification
 app.get('/', (req, res) => {
