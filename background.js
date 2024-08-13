@@ -1,4 +1,6 @@
 let user_signed_in = false;
+let user_info = null;
+
 const CLIENT_ID = encodeURIComponent("748596873331-qrgdo2taa49tqjib6gtsfrfpvdvbjkmg.apps.googleusercontent.com");
 const RESPONSE_TYPE = encodeURIComponent("id_token");
 const REDIRECT_URI = encodeURIComponent("https://cfkbnikmmnjfgdcblekccmebjjeacnib.chromiumapp.org");
@@ -44,11 +46,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 let id_token = redirect_url.substring(redirect_url.indexOf('id_token=') + 9);
                 id_token = id_token.substring(0, id_token.indexOf('&'));
                 
-                const user_info = KJUR.jws.JWS.readSafeJSONString(b64utoutf8(id_token.split(".")[1]));
+                user_info = KJUR.jws.JWS.readSafeJSONString(b64utoutf8(id_token.split(".")[1]));
 
                 if ((user_info.iss == 'https://accounts.google.com' || user_info.iss === 'accounts.google.com')
                     && user_info.aud === CLIENT_ID) {
-                    chrome.browserAction.setPopup({popup: '/popup-signed-in.html'}, function() {
+                    chrome.browserAction.setPopup({popup: '/popup.html'}, function() {
                         user_signed_in = true;
 
                         // Create or update user in the backend
@@ -87,17 +89,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     } else if (request.message === 'logout') {
         chrome.browserAction.setPopup({popup: '/popup.html'}, function() {
             user_signed_in = false;
+            user_info = null;
             sendResponse('success');
         });
     } else if (request.message === 'isUserSignedIn') {
         sendResponse(is_user_signed_in());
+    } else if (request.message === 'get-user-info') {
+        sendResponse(user_info);
     } else if (request.message === 'save-article') {
+        const data = { ...request.data, userId: user_info.sub };
         fetch(`${BACKEND_URL}/save-article`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(request.data)
+            body: JSON.stringify(data)
         }).then(response => response.json())
           .then(data => {
               console.log('Article saved:', data);
@@ -109,7 +115,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           });
         return true;
     } else if (request.message === 'get-articles') {
-        fetch(`${BACKEND_URL}/get-articles/${request.userId}`)
+        fetch(`${BACKEND_URL}/get-articles/${user_info.sub}`)
             .then(response => response.json())
             .then(data => {
                 sendResponse({ articles: data });
